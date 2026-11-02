@@ -457,3 +457,114 @@ EVENTS.push({ m: 783, id: 'd_e8_council', cond: dPre, run: function () {
     { t: '제자들을 사신으로 보낸다', h: '새 동맹을 얻는다', off: ds.length ? null : '보낼 제자가 없다', f: function () { if (worldOf() === 'jeong') F.d_ally_ma = 1; else F.d_ally_jeong = 1; done(dTopDisc() + '이(가) ' + W('흰 깃발의 성으로', '검은 깃발의 산으로', '맹의 성으로') + ' 떠났다. 석 달 뒤 답이 왔다. 「함께 서겠다.」', 'people'); } },
     { t: '홀로 폐관에 든다', h: '내공 +' + q, f: function () { S.qi += q; done('회의를 남에게 맡기고 동굴에 들었다. 늙은 몸으로 할 수 있는 일은 하나뿐이다. 더 날카로워지는 것. 내공 +' + q + '.', 'qi'); } }], 'alliance');
 } });
+
+/* ================= E9 황혼의 전쟁 (793~888) ================= */
+function dSeatFight(id, title, mul, heal, winTxt, loseTxt, lethal) {
+  var F = S.flags;
+  fight(id, et() + .7, { auto: true, spar: !(lethal && !S.noReturn), title: title, heal: heal, hpMul: mul,
+    win: function () { F[id] = 1; var q = qiPct(.09); S.qi += q; addMat(pick(['core', 'scale', 'gem']), 1); if (dSeats() >= 4) ach('d_seats'); done(winTxt + ' 내공 +' + q + '.', 'fight'); },
+    lose: lethal && !S.noReturn ? function () { die('d_seat'); } : function () { S.hp = Math.max(1, Math.round(maxHp() * .2)); F.d_seatLoss = (F.d_seatLoss || 0) + 1; done(loseTxt, 'fail'); } });
+}
+function dEmptySeat(name, txt) {
+  var q = qiPct(.04);
+  scene(name + '의 빈자리', ps(txt, '전장은 그만큼 조용했다. 당신은 그 고요를 다른 곳에 쓰기로 했다.'), [
+    { t: '부상자를 돌본다', h: '마기 -15 · 동맹이 단단해진다', f: function () { S.mad = Math.max(0, S.mad - 15); S.flags.d_ally_town = 1; done('늙은 손으로 붕대를 감았다. 젊은 무사 하나가 당신을 알아보고 울었다.', 'people'); } },
+    { t: '다음 자리를 위해 운기한다', h: '내공 +' + q, f: function () { S.qi += q; done('칼을 무릎에 올려놓고 숨을 골랐다. 내공 +' + q + '.', 'qi'); } }], 'siege');
+}
+
+EVENTS.push({ m: 795, id: 'd_e9_war', cond: dPre, run: function () {
+  var F = S.flags, al = dAllies(), q = qiPct(.05);
+  pages('황혼의 전쟁', [ps('하늘의 금 아래로 하얀 옷의 군세가 내려왔다. 발이 땅에 닿지 않았다. 구천문이 마침내 전쟁을 선포했다.',
+    '그들의 요구는 하나였다. 「마지막 혈월에 문 앞을 비워라.」',
+    age() + '세. 당신은 갑옷 끈을 묶다가 손이 떨려 두 번을 다시 묶었다. ' + (al.length ? '옆에서 ' + al[0] + '이(가) 대신 묶어 주었다.' : '아무도 대신 묶어 주지 않았다. 세 번째에 묶였다.')),
+    ps(al.length >= 3 ? '깃발들이 모였다. 오십 년 동안 서로를 베던 깃발들이 한 산자락에 나란히 꽂혔다. 누가 시작했는지 아무도 묻지 않았다.' : (al.length ? '모인 깃발은 많지 않았다. 그래도 하나보다는 나았다.' : '당신의 깃발은 당신 하나였다.'),
+      (F.d_grudge || 0) >= 2 ? '그리고 당신을 원망하는 자들도 전장에 나왔다. 그들은 구천문 쪽에 서 있었다.' : '하늘을 등진 자들 사이에서 당신 이름이 오르내렸다.')], 'siege', function () {
+    scene('첫 싸움', '<p>하늘에서 첫 번째 하얀 화살이 내려왔다.</p>', [
+      { t: '선봉에 선다', h: '전투 · 내공 +' + q, c: 'primary', f: function () { fight('d_acolyte', et(), { auto: true, spar: true, title: '구천문 선봉', heal: .3, win: function () { S.qi += q; F.d_vanguard = 1; done('하얀 옷들이 재가 되어 흩어졌다. 늙은 장수가 맨 앞에 선 것을 본 젊은이들이 함성을 질렀다. 내공 +' + q + '.', 'fight'); }, lose: function () { S.hp = Math.max(1, Math.round(maxHp() * .3)); done('선봉에서 밀렸다. 젊은이들이 당신을 업고 뒤로 물러났다. 부끄럽지는 않았다. 고마웠다.', 'fail'); } }); } },
+      { t: '성벽을 지키며 사람들을 들인다', h: '체력 회복 · 회춘단 +1 · 마을 사람들이 편에 선다', f: function () { S.hp = maxHp(); S.items.pill = Math.min(8, S.items.pill + 1); F.d_ally_town = 1; done('성문을 열어 피난민을 들였다. 성 안이 사람으로 가득 찼다. 화살보다 그 숨소리가 더 크게 들렸다.', 'people'); } }], 'siege');
+  });
+} });
+
+EVENTS.push({ m: 807, id: 'd_e9_s7', cond: dPre, run: function () {
+  var F = S.flags;
+  if (F.d_s7) { dEmptySeat('칠좌', '칠좌 철우는 이미 당신 손에 재가 되었다. 구천문은 그 자리를 아직 채우지 못했다.'); return; }
+  var read = F.d_s7read;
+  if (!read) hurt(.12);
+  scene('쇠 깃털의 비', ps('하늘에서 쇠 깃털이 비처럼 쏟아졌다. ' + (read ? '당신은 철우가 오른발에 무게를 싣는 순간을 기다렸다. 깃털은 그 직전에만 쏟아진다.' : '깃털 하나가 어깨에 박혔다. 뽑자 피가 검었다.'),
+    '구름 위에서 칠좌 철우가 뛰어내렸다. 땅이 발밑에서 파였다. “늙은이, 아직 살아 있었나.”'), [
+    { t: '맞선다', h: '보스 · 강타와 운기를 즐긴다' + (read ? ' · [버릇을 안다] 수월해진다' : '') + ' · 져도 죽지는 않는다', c: 'primary', f: function () { dSeatFight('d_s7', '칠좌 철우', read ? .8 : 1, .3, '철우의 쇠 망토가 갈라졌다. 깃털이 한 장씩 떨어지며 그도 함께 무너졌다. “힘으로는... 안 되는군.”', '철우의 주먹에 성벽까지 날아갔다. 그가 웃으며 하늘로 돌아갔다. 칠좌는 아직 살아 있다.'); } },
+    { t: '동맹에게 맡기고 물러난다', h: '피를 아낀다 · 칠좌는 남는다', off: dAllies().length ? null : '맡길 사람이 없다', f: function () { S.hp = maxHp(); done('동맹들이 철우를 하루 종일 붙잡아 두었다. 그 사이 당신은 숨을 골랐다. 칠좌는 저녁에 물러갔다.', 'rest'); } }], 'siege');
+} });
+
+EVENTS.push({ m: 819, id: 'd_e9_return', cond: dPre, run: function () {
+  var F = S.flags, g = F.d_grudge || 0, parts = [], ch = [];
+  parts.push('전쟁이 길어지자 지난 세월이 한꺼번에 돌아왔다. 은혜를 입은 자들과 원한을 품은 자들이, 같은 해에.');
+  if (F.d_ally_town) parts.push('역병과 기근 때 살려 낸 고을 사람들이 수레에 쌀과 약을 싣고 왔다. 맨 앞의 노인이 말했다. “그때 받은 거요.”');
+  if (dFriend('곡달', 1)) parts.push('흑천왕 곡달의 늙은 깃발도 보였다. “사파도 하늘은 싫다.” 그가 침을 뱉었다.');
+  if (dFriend('빙린', 1)) parts.push('북해에서 얼음 수레가 내려왔다. 빙린이 보낸 것이었다. 편지는 한 줄이었다. 「갚는다.」');
+  if (dFriend('소화', 1)) parts.push('소화가 백발을 휘날리며 성문을 넘어왔다. “늦었지? 나도 늙었어.”');
+  if (F.d_rebelGone) parts.push('그리고 ' + esc(F.d_rebelGone) + '. 후계 다툼 끝에 산을 내려간 제자가 ' + (g >= 2 ? '하얀 옷을 입고 구천문 쪽에 서 있었다.' : '흙투성이가 되어 성문 앞에 무릎을 꿇었다.'));
+  if (g >= 2) parts.push('당신이 문을 잠그고 곡식을 쥐었던 해들을 기억하는 자들이 구천문 깃발 아래 모여 있었다.');
+  if (parts.length === 1) parts.push('그러나 당신에게는 돌아올 은혜도 원한도 많지 않았다. 너무 조용히 살았거나, 너무 많이 잊었다.');
+  if (F.d_rebelGone && g < 2) ch.push({ t: esc(F.d_rebelGone) + '을(를) 다시 받아들인다', h: '제자가 돌아온다', c: 'primary', f: function () { S.disc = S.disc || []; if (S.disc.length < 8) S.disc.push({ n: F.d_rebelGone, p: 70, t: 3, a: 40 }); F.d_rebelGone = ''; done('일으켜 세우자 제자가 울었다. 당신도 조금 울었다. 늙으면 눈물이 헐거워진다.', 'people'); } });
+  if (g >= 2 || F.d_rebelGone) ch.push({ t: '원한을 품은 자들과 칼로 마주한다', h: '전투 · 져도 죽지는 않는다 · 이기면 원한이 풀린다', f: function () { fight('d_rebel', et() + .2, { auto: true, spar: true, title: '돌아온 원한', heal: .3, win: function () { F.d_grudge = 0; F.d_rebelGone = ''; S.silver += price(200); done('원한은 칼로 풀리지 않는다. 그러나 칼을 받아 준 것만으로 풀리는 원한도 있다. 패한 자들이 하얀 옷을 벗었다. 은전 <b>' + price(200) + '</b>냥.', 'fight'); }, lose: function () { S.hp = Math.max(1, Math.round(maxHp() * .25)); done('원한이 더 날카로웠다. 그들은 당신을 죽이지 않고 하늘로 돌아갔다. 죽이는 것보다 무서운 일이었다.', 'fail'); } }); } });
+  ch.push({ t: '은혜와 원한을 함께 장부에 적는다', h: '마기 -15 · 은전 +' + price(120), f: function () { S.mad = Math.max(0, S.mad - 15); S.silver += price(120); done('한 장에 은혜를, 한 장에 원한을 적었다. 두 장은 비슷한 두께였다. 그것이 한 사람의 평생이었다.', 'event'); } });
+  scene('돌아온 것들', ps.apply(null, parts), ch, 'alliance');
+} });
+
+EVENTS.push({ m: 831, id: 'd_e9_s5', cond: dPre, run: function () {
+  var F = S.flags, mem = hasMem('d_mirror');
+  if (F.d_s5) { dEmptySeat('오좌', '오좌 수경의 거울은 깨진 채로 성 밖에 나뒹군다. 아무도 그 조각을 들여다보지 않는다.'); return; }
+  if (!mem) dMad(10);
+  scene('거울의 여인', ps('안개 속에서 은빛 거울을 든 여인이 걸어 나왔다. 오좌 수경. 거울 속에 당신이 있었다. 젊은 날의 당신이.',
+    mem ? '기억이 말한다. 거울은 꾀를 되비춘다. 정직하게 쳐라.' : '거울 속의 젊은 당신이 웃자, 늙은 당신의 마기가 끓었다. 거울은 마음을 되비춘다.',
+    '“네가 버린 봄들이 다 여기 있다.” 수경이 거울을 기울였다. “돌아가고 싶지 않으냐.”'), [
+    { t: '거울을 향해 정직하게 친다', h: '보스 · 허초를 즐긴다' + (mem ? ' · [기억] 크게 수월해진다' : '') + (F.d_s5read ? ' · [정보] 수월해진다' : '') + ' · 져도 죽지는 않는다', c: 'primary', f: function () { dSeatFight('d_s5', '오좌 수경', (mem ? .72 : 1) * (F.d_s5read ? .88 : 1), .3, '거울이 한가운데부터 금이 갔다. 젊은 당신의 얼굴이 조각조각 흩어졌다. 수경이 깨진 조각 하나를 쥐고 중얼거렸다. “늙은 얼굴이... 더 낫구나.”', '거울 속에서 젊은 당신이 늙은 당신을 베었다. 수경은 당신을 내려다보다 안개 속으로 돌아갔다.'); if (!mem) learnMem('d_mirror'); } },
+    { t: '눈을 감고 물러난다', h: '마기 -10 · 오좌는 남는다', f: function () { S.mad = Math.max(0, S.mad - 10); done('거울을 보지 않기로 했다. 버린 봄들은 버린 대로 두었다.', 'rest'); } }], 'siege');
+} });
+
+EVENTS.push({ m: 843, id: 'd_e9_disc', cond: dPre, run: function () {
+  var F = S.flags, ds = dDisc();
+  if (ds.length) {
+    var d = ds[0];
+    scene('제자의 전장', ps('전선의 서쪽 고개가 무너졌다. 구천문 신도들이 몰려든다. ' + esc(d.n) + '이(가) 칼을 들고 당신 앞에 섰다.', '“스승님은 여기 계십시오. 이번에는 제가 가겠습니다.” ' + (d.p >= 80 ? '그 칼끝이 당신보다 고요했다.' : '그 칼끝이 조금 떨렸다.')), [
+      { t: '보낸다', h: '제자가 크게 자란다 · 다칠 수 있다', f: function () { var ok = Math.random() < .45 + d.p / 200; if (ok) { d.p = Math.min(100, d.p + 25); F.d_discHero = d.n; done(esc(d.n) + '이(가) 고개를 지켜 냈다. 피투성이로 돌아와 웃었다. 당신은 처음으로 그 아이에게 절을 받지 않고, 먼저 고개를 숙였다.', 'people'); } else { d.p = Math.max(0, d.p - 10); hurt(.15); done('고개는 지켰지만 ' + esc(d.n) + '이(가) 크게 다쳤다. 당신이 업고 내려왔다. 무거웠다. 자란 무게였다.', 'fail'); } } },
+      { t: '함께 간다', h: '전투 · 제자 수련 +15', c: 'primary', f: function () { fight('d_acolyte', et() * 1.05, { auto: true, spar: true, title: '서쪽 고개', heal: .3, win: function () { d.p = Math.min(100, d.p + 15); S.qi += qiPct(.03); done('늙은 칼과 젊은 칼이 등을 맞댔다. 서로의 숨소리로 수를 읽었다. 가르친 적 없는 합이 저절로 나왔다.', 'fight'); }, lose: function () { S.hp = Math.max(1, Math.round(maxHp() * .3)); done('고개를 내주었다. 그러나 둘 다 살았다. 그거면 됐다.', 'fail'); } }); } },
+      { t: '뒤로 물려 살린다', h: '제자는 안전하다 · 마기 -10', f: function () { F.d_discSafe = 1; S.mad = Math.max(0, S.mad - 10); done('“너는 다음 전쟁을 위해 남아라.” ' + esc(d.n) + '은(는) 이를 악물고 물러났다. 고개는 당신이 혼자 지켰다.', 'event'); } }], 'siege');
+    return;
+  }
+  scene('이름 모를 젊은이', ps('서쪽 고개에서 이름 모를 젊은이가 당신 곁으로 왔다. “어릴 때 어른 이야기를 듣고 칼을 잡았습니다.”', '당신은 그 이야기가 어떤 이야기인지 묻지 않았다. 반은 거짓이었을 테니까.'), [
+    { t: '한 수 가르쳐 준다', h: '제자를 얻는다', off: (S.disc || []).length >= 8 ? '제자가 너무 많다' : null, f: function () { S.disc = S.disc || []; S.disc.push({ n: randName(), p: 30, t: rnd(2, 4), a: rnd(18, 24) }); done('고개를 지키는 사이사이 칼 잡는 법을 고쳐 주었다. 전쟁 중에 제자를 들였다. 늙으면 순서가 엉망이 된다.', 'people'); } },
+    { t: '함께 고개를 지킨다', h: '전투', f: function () { fight('d_acolyte', et(), { auto: true, spar: true, title: '서쪽 고개', win: function () { S.qi += qiPct(.03); done('젊은이는 살아남았다. 이름을 묻자 그가 웃었다. “어르신처럼 없습니다.”', 'fight'); }, lose: function () { S.hp = Math.max(1, Math.round(maxHp() * .3)); done('고개를 내주었다. 젊은이가 당신을 업고 뛰었다.', 'fail'); } }); } }], 'siege');
+} });
+
+EVENTS.push({ m: 855, id: 'd_e9_s3', cond: dPre, run: function () {
+  var F = S.flags, rd = F.d_s3read;
+  if (F.d_s3) { dEmptySeat('삼좌', '삼좌 백야는 쓰러졌다. 그 뒤로 밤이 제때 찾아왔다.'); return; }
+  scene('끝나지 않는 밤', ps('해가 지지 않았다. 아니, 해가 진 뒤에도 하늘이 하얬다. 삼좌 백야의 밤이다. 이 밤에는 아무도 잠들 수 없고, 잠들지 못한 자는 상처가 아물지 않는다.',
+    '하얀 머리칼의 소년 같은 자가 지붕 위를 달렸다. 발소리가 빗소리처럼 잘게 이어졌다. “할아버지, 오래 버티지 마요. 지루하니까.”'), [
+    { t: '하얀 밤 속에서 맞선다', h: '보스 · 연타가 매섭다 · 싸움 전 회복이 없다' + (rd ? ' · [정보] 수월해진다' : '') + ' · 져도 죽지는 않는다', c: 'primary', f: function () { dSeatFight('d_s3', '삼좌 백야', rd ? .82 : 1, rd ? .3 : 0, '백야가 지붕에서 떨어졌다. 그가 쓰러지자 하늘이 처음으로 어두워졌다. 소년의 얼굴이 순식간에 늙었다. “아... 졸려.”', '연타가 끝나지 않았다. 쓰러진 당신 위로 하얀 밤이 사흘 더 이어졌다.'); } },
+    { t: '잠들지 않고 버틴다', h: '체력 -25% · 내공 +' + qiPct(.04) + ' · 삼좌는 남는다', f: function () { var q = qiPct(.04); hurt(.25); S.qi += q; done('사흘 밤을 눈 뜨고 버텼다. 백야가 지루해져 떠났다. 지루함도 무기가 된다. 내공 +' + q + '.', 'qi'); } }], 'siege');
+} });
+
+EVENTS.push({ m: 867, id: 'd_e9_s2', cond: dPre, run: function () {
+  var F = S.flags, al = dAllies(), rd = F.d_s2read;
+  if (F.d_s2) { dEmptySeat('이좌', '이좌 공명이 쓰러진 뒤로 전장에 다시 소리가 돌아왔다.'); return; }
+  var mul = (al.length >= 3 ? .82 : 1) * (rd ? .85 : 1) * (F.d_armory ? .92 : 1);
+  scene('소리를 먹는 자', ps('전장에서 소리가 사라졌다. 칼 부딪는 소리도, 비명도, 당신의 숨소리도. 이좌 공명이 왔다.',
+    '그는 말하지 않았다. 입이 없었다. 대신 그가 손을 들자 동맹들의 함성이 그 손바닥으로 빨려 들어갔다. ' + (al.length >= 3 ? '그러나 함성이 너무 많았다. 공명의 손이 떨렸다.' : '빨려 들어간 소리만큼 그가 커졌다.'),
+    '구천문 둘째 자리. 일좌 바로 아래. ' + (S.noReturn ? '돌아올 수 없는 몸으로 맞서기에는 너무 큰 상대다.' : '여기서 쓰러지면 다시 봄으로 돌아갈 것이다.')), [
+    { t: '소리 없는 전장에서 맞선다', h: '치명적 보스' + (S.noReturn ? ' (굴레 밖: 지면 크게 다친다)' : ' · 지면 죽는다') + (al.length >= 3 ? ' · [동맹] 수월해진다' : '') + (rd ? ' · [정보] 수월해진다' : ''), c: 'primary', f: function () { dSeatFight('d_s2', '이좌 공명', mul, .5, '공명의 몸이 터지며 삼켰던 소리들이 한꺼번에 쏟아져 나왔다. 수천의 함성, 수천의 비명. 그 가운데 당신 이름을 부르는 소리도 있었다.', '공명이 당신의 숨소리까지 삼켰다. 동맹들이 당신을 끌어냈다. 이좌는 아직 서 있다.', true); } },
+    { t: '함성을 멈추게 하고 물러난다', h: '피를 아낀다 · 이좌는 남는다', f: function () { done('동맹들에게 입을 다물라 했다. 먹을 소리가 없자 공명은 천천히 하늘로 돌아갔다. 침묵으로 이긴 것은 아니다. 다만 지지 않았다.', 'event'); } }], 'siege');
+} });
+
+EVENTS.push({ m: 879, id: 'd_e9_eve', cond: dPre, run: function () {
+  var F = S.flags, n = dSeats(), q = qiPct(.05);
+  if (n >= 4) ach('d_seats');
+  scene('문 앞의 밤', ps('황혼의 전쟁이 끝나 간다. 일곱 자리 중 ' + (n + (F.d_s4 ? 1 : 0) + (F.d_hwaDead || F.d_hwa_met ? 1 : 0)) + '자리가 비었다. 남은 것은 문과 일좌.',
+    '하늘의 금이 문의 모양을 거의 다 갖추었다. 마지막 혈월이 멀지 않았다.',
+    age() + '세. 당신은 처음으로 칼을 닦지 않고 그냥 두었다. 내일 닦아도 된다. 아직 내일이 있다.'), [
+    { t: '유언을 적는다', h: '마기 모두 가라앉는다', f: function () { F.d_will = 1; S.mad = 0; done('짧게 적었다. 「문 앞에 서라. 혼자 서지 마라.」 다 적고 나니 할 말이 그것뿐이었다.', 'event'); } },
+    { t: '마지막 수련을 한다', h: '내공 +' + q, c: 'primary', f: function () { S.qi += q; done('어두운 연무장에서 처음 배운 초식부터 다시 했다. 손이 기억하고 있었다. 내공 +' + q + '.', 'qi'); } },
+    { t: '무덤들을 돈다', h: '체력 회복 · 마기 -20', f: function () { S.hp = maxHp(); S.mad = Math.max(0, S.mad - 20); done('하룻밤에 무덤 여럿을 돌았다. 다 돌고 나니 새벽이었다. 무덤마다 한마디씩 했다. 곧 간다고.', 'rest'); } }], 'night');
+} });
