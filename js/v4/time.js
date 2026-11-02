@@ -37,7 +37,7 @@ function lifespan() { return Math.min(96, 74 + 2 * S.realm + Math.min(12, S.life
 function yearsLeft() { return lifespan() - age(); }
 /* 마지막 혈월은 수명보다 3년 앞선 해에 온다 — EVENTS에 m:'final'로 등록한다 */
 function finalMonth() { return Math.max(YOUTH_END + 60, (lifespan() - 3 - START_AGE) * 12 + 1); }
-function eventDue(m) { return EVENTS.filter(function (x) { return (x.m === m || (x.m === 'final' && m === finalMonth())) && !S.flags['seen_' + x.id] && (!x.cond || x.cond()); })[0]; }
+function eventDue(m) { var ok = function (x) { return !S.flags['seen_' + x.id] && (!x.cond || x.cond()); }; var f = m === finalMonth() ? EVENTS.filter(function (x) { return x.m === 'final' && ok(x); })[0] : null; return f || EVENTS.filter(function (x) { return x.m === m && ok(x); })[0]; }
 
 /* 한 해가 바뀔 때 */
 function yearTick() {

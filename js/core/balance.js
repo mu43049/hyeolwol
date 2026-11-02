@@ -5,10 +5,10 @@ var REALMS = [
   { n: '일류', g: '一', h: '一流', q: 220 },
   { n: '절정', g: '絶', h: '絶頂', q: 420 },
   { n: '초절정', g: '超', h: '超絶頂', q: 900 },
-  { n: '화경', g: '化', h: '化境', q: 4200 },
-  { n: '현경', g: '玄', h: '玄境', q: 9500 },
-  { n: '생사경', g: '生', h: '生死境', q: 17500 },
-  { n: '자연경', g: '然', h: '自然境', q: 29000 }
+  { n: '화경', g: '化', h: '化境', q: 5000 },
+  { n: '현경', g: '玄', h: '玄境', q: 12500 },
+  { n: '생사경', g: '生', h: '生死境', q: 23000 },
+  { n: '자연경', g: '然', h: '自然境', q: 38000 }
 ];
 var WEAP = [{ n: '맨손', a: 0 }, { n: '철도', a: 4 }, { n: '흑철도', a: 9 }, { n: '혈철도', a: 15 }, { n: '천마도', a: 23 }, { n: '현철검', a: 32 }, { n: '자하신검', a: 43 }, { n: '용린도', a: 56 }, { n: '천외신병', a: 72 }];
 var ARMOR = [{ n: '무명옷', d: 0, h: 0 }, { n: '가죽갑', d: 2, h: 12 }, { n: '흑린갑', d: 5, h: 28 }, { n: '천잠보의', d: 9, h: 50 }, { n: '현철갑', d: 14, h: 80 }, { n: '금사연갑', d: 20, h: 115 }, { n: '용린갑', d: 28, h: 160 }, { n: '천의무봉', d: 38, h: 220 }];
@@ -42,7 +42,8 @@ function pAtk() {
 }
 function pDef() { return 2 + 2.5 * S.realm + sk('geumgang') * .8 + ARMOR[S.armor || 0].d + upL('def') * 1.5 + accSum('d'); }
 function critRate() { return Math.min(.35, .06 + .015 * effEye()); }
-function qiGain(n) { return Math.round(n * (1 + .08 * upL('gain') + accSum('q') / 100)); }
+/* 초절정부터는 내공이 더디게 쌓인다 — 80년에 걸쳐 자연경에 닿도록 */
+function qiGain(n) { return Math.round(n * (1 + .08 * upL('gain') + accSum('q') / 100) * (S && S.realm >= 4 ? .55 : 1)); }
 function canBreak() { return S.realm < REALMS.length - 1 && S.qi >= REALMS[S.realm + 1].q; }
 function nextQ() { return REALMS[S.realm + 1] ? REALMS[S.realm + 1].q : S.qi; }
 function madMul() { return S.realm >= 8 ? 0 : (S.realm >= 4 ? .7 : 1); }

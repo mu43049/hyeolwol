@@ -568,3 +568,148 @@ EVENTS.push({ m: 879, id: 'd_e9_eve', cond: dPre, run: function () {
     { t: '마지막 수련을 한다', h: '내공 +' + q, c: 'primary', f: function () { S.qi += q; done('어두운 연무장에서 처음 배운 초식부터 다시 했다. 손이 기억하고 있었다. 내공 +' + q + '.', 'qi'); } },
     { t: '무덤들을 돈다', h: '체력 회복 · 마기 -20', f: function () { S.hp = maxHp(); S.mad = Math.max(0, S.mad - 20); done('하룻밤에 무덤 여럿을 돌았다. 다 돌고 나니 새벽이었다. 무덤마다 한마디씩 했다. 곧 간다고.', 'rest'); } }], 'night');
 } });
+
+/* ================= E10 마지막 혈월 이후 (889~960, 남은 해를 사는 자만) ================= */
+function dAfterOk() { return dPost() && !!S.flags.d_after; }
+function dWhite() { return S.flags.d_after === 'd_true'; }
+
+EVENTS.push({ m: 891, id: 'd_e10_spring', cond: dAfterOk, run: function () {
+  var q = qiPct(.03);
+  scene('붉지 않은 봄', ps(age() + '세의 봄. ' + (dWhite() ? '달이 하얗게 떴다. 올해도. 아이들은 달이 원래 하얀 줄 안다.' : '달은 여전히 조금 붉다. 그러나 해마다 조금씩 옅어진다. 문 앞의 파수꾼들이 그 색을 장부에 적는다.'),
+    '매화가 졌다. 당신은 마루에 앉아 꽃잎이 떨어지는 것을 끝까지 보았다. 젊을 때는 한 번도 끝까지 본 적이 없었다.'), [
+    { t: '꽃잎을 주워 차를 우린다', h: '마기 -20 · 체력 회복', f: function () { S.mad = Math.max(0, S.mad - 20); S.hp = maxHp(); done('매화차는 싱거웠다. 싱거운 것이 좋아지는 나이가 되었다.', 'rest'); } },
+    { t: '마당에서 칼을 한 번 휘두른다', h: '내공 +' + q, f: function () { S.qi += q; done('한 번만 휘둘렀다. 꽃잎 하나가 두 쪽이 되어 떨어졌다. 아직 된다. 내공 +' + q + '.', 'qi'); } }], 'peace');
+} });
+
+EVENTS.push({ m: 903, id: 'd_e10_watch', cond: dAfterOk, run: function () {
+  var h = S.flags.d_heirName ? esc(S.flags.d_heirName) : (dTopDisc() || '젊은 파수꾼');
+  scene(dWhite() ? '닫힌 문 자리' : '문 앞의 파수', ps(dWhite() ? '문이 있던 하늘 자리를 보러 산에 올랐다. 아무것도 없었다. 그냥 하늘이었다. 그게 그렇게 좋았다.' : '문 앞을 지키는 ' + h + '을(를) 찾아갔다. 반쯤 열린 문 아래에 작은 초막이 생겨 있었다.',
+    dWhite() ? '내려오는 길에 나무꾼이 물었다. “어르신, 저기 뭐가 있었습니까?” “하늘.”' : h + '이(가) 차를 따르며 장부를 내밀었다. 「붉음 셋 푼 줄다.」 글씨가 반듯했다.'), [
+    { t: '장부 끝에 한 줄 적는다', h: '마기 -15 · 은전 +' + price(100), f: function () { S.mad = Math.max(0, S.mad - 15); S.silver += price(100); done('「잘 지키고 있다.」 다섯 글자를 적었다. ' + h + '이(가) 그 장을 오래 들여다보았다. 문파에서 보낸 공양 은전 <b>' + price(100) + '</b>냥을 받아 왔다.', 'people'); } },
+    { t: '하룻밤 함께 지킨다', h: '내공 +' + qiPct(.03), f: function () { var q = qiPct(.03); S.qi += q; done('밤새 문 아래에 앉아 있었다. 문틈에서 아무 소리도 나지 않았다. 지키는 일이란 대개 그런 것이다. 내공 +' + q + '.', 'qi'); } }], dWhite() ? 'true' : 'peace');
+} });
+
+EVENTS.push({ m: 915, id: 'd_e10_book', cond: dAfterOk, run: function () {
+  scene('이야기책', ps('저잣거리에 이야기책 하나가 돌았다. 「혈월을 닫은 이름 없는 고수」. 당신 이야기였다. 반은 맞고 반은 틀렸다.',
+    '책 속의 당신은 키가 일곱 자에 칼 한 번에 산을 갈랐다. 연애도 세 번 했다. 그중 둘은 당신도 처음 듣는 이야기였다.'), [
+    { t: '지은이를 찾아가 바로잡는다', h: '은전 +' + price(80) + ' · 이야기가 조금 정확해진다', f: function () { S.silver += price(80); done('젊은 서생이 엎드려 절했다. 키는 고쳤다. 연애는 고치지 말아 달라고 사정해서 그냥 두었다. 서생이 고마움의 표시로 은전 <b>' + price(80) + '</b>냥을 내밀었다.', 'people'); } },
+    { t: '그냥 둔다', h: '마기 -15', f: function () { S.mad = Math.max(0, S.mad - 15); done('틀린 이야기가 더 오래 산다. 그래도 괜찮다. 이름이 없으니 틀려도 아무도 다치지 않는다.', 'rest'); } },
+    { t: '책 맨 뒤에 몰래 한 줄 더한다', h: '아무도 모른다', f: function () { done('책방 구석에서 붓을 빌려 맨 뒷장에 적었다. 「그는 혼자가 아니었다.」 다음 판본부터 그 줄이 그대로 찍혀 나왔다.', 'event'); } }], 'peace');
+} });
+
+EVENTS.push({ m: 927, id: 'd_e10_sword', cond: dAfterOk, run: function () {
+  var ds = dDisc(), who = S.flags.d_heirName ? esc(S.flags.d_heirName) : (ds[0] ? esc(ds[0].n) : '');
+  scene('칼을 넘기다', ps(who ? who + '이(가) 찾아왔다. 머리에 흰 것이 섞여 있었다. 제자도 늙는다.' : '옆집 아이가 당신의 칼을 가리켰다. “할아버지, 그건 뭐예요?”',
+    '평생 쥔 칼이 벽에 걸려 있다. 이제 들면 팔이 떨린다.'), [
+    { t: who ? who + '에게 칼을 넘긴다' : '아이에게 칼을 넘긴다', h: '마기 모두 가라앉는다', c: 'primary', f: function () { S.mad = 0; S.flags.d_swordGiven = 1; done(who ? '칼을 건네자 ' + who + '이(가) 두 손으로 받았다. 받는 손이 떨렸다. 그래서 안심했다. 무게를 아는 손이다.' : '아이는 칼을 질질 끌고 갔다. 언젠가 들 수 있게 될 것이다. 아니어도 괜찮다.', 'people'); } },
+    { t: '조금 더 쥐고 있는다', h: '내공 +' + qiPct(.02), f: function () { var q = qiPct(.02); S.qi += q; done('아직은 아니다. 칼을 내려 닦았다. 손이 떨렸지만 닦는 데는 충분했다. 내공 +' + q + '.', 'qi'); } }], 'peace');
+} });
+
+EVENTS.push({ m: 939, id: 'd_e10_moon', cond: dAfterOk, run: function () {
+  var id = ENDINGS[S.flags.d_after] ? S.flags.d_after : 'd_peace';
+  scene('마지막 달맞이', ps(age() + '세. 달맞이 날 밤, 마당에 사람들이 모였다. ' + ((S.disc || []).length ? dJoin(dDisc().slice(0, 3).map(function (d) { return esc(d.n); })) + '. ' : '') + '이름을 다 기억할 수 없을 만큼.',
+    dWhite() ? '하얀 달이 떴다. 당신이 처음 본 달은 붉었다. 마지막으로 보는 달이 하얘서 다행이었다.' : '옅은 붉은 달이 떴다. 처음 본 그 달의 색이 거의 다 빠져 있었다.',
+    '이제 언제 이야기를 맺어도 된다.'), [
+    { t: '달을 보며 눈을 감는다', h: '여기서 결말을 맞는다', f: function () { finish(id); } },
+    { t: '내년 달도 보겠다고 말한다', h: '조금 더 산다 · 체력 회복', c: 'primary', f: function () { S.hp = maxHp(); done('“내년에도 보자.” 사람들이 웃었다. 당신도 웃었다. 약속은 지킬 수도 있고 못 지킬 수도 있다. 그래도 하는 것이다.', 'people'); } }], dWhite() ? 'true' : 'night');
+} });
+
+/* ================= 우연한 사건 (67~96세) ================= */
+LIFE.push({ id: 'd_l_memory', from: 67, w: 3, cd: 30, run: function () {
+  var who = pick(['독고강의 외팔', '홍란의 쓴 약', '연이의 말린 감', '혈월봉의 첫 매화', '처음 쥔 목도', '이름 없던 시종 시절의 짚신']);
+  scene('회상', ps('아침에 일어나 한참 앉아 있었다. 꿈에서 ' + who + '을(를) 보았다.', W('창밖으로 혈월봉의 능선이 보인다. 그 능선은 오십 년 전과 똑같다.', '맹의 뜰에 흰 깃발이 펄럭인다. 그 깃발 아래 몇이나 묻었는지 세다가 그만두었다.', '낯선 마을 처마 끝에 고드름이 맺혀 있다. 어디서 봐도 고드름은 고드름이다.')), [
+    { t: '기억을 따라 옛 초식을 펼친다', h: '내공 +' + qiPct(.02), f: function () { var q = qiPct(.02); S.qi += q; done('젊을 때 배운 초식을 늙은 몸으로 다시 해 보았다. 느렸다. 느려서 비로소 보이는 것이 있었다. 내공 +' + q + '.', 'qi'); } },
+    { t: '그냥 앉아 있는다', h: '마기 -15', f: function () { S.mad = Math.max(0, S.mad - 15); done('해가 질 때까지 앉아 있었다. 아무것도 하지 않은 하루였다. 그런 하루가 귀하다는 것을 이제는 안다.', 'rest'); } }]);
+} });
+LIFE.push({ id: 'd_l_funeral', from: 67, to: 94, w: 2, cd: 36, run: function () {
+  var who = pick(['옛 전우', '오래전 칼을 섞었던 적수', '젊은 날 묵었던 객잔 주인', '처음 칼을 벼려 준 대장장이의 아들', '같은 해에 입문한 동기']);
+  scene('장례', ps(who + '의 부고가 왔다. ' + age() + '세가 되니 부고는 계절처럼 온다.', '상가에 가니 아는 얼굴보다 모르는 얼굴이 많았다. 죽은 이의 손자가 당신을 알아보고 절했다.'), [
+    { t: '부의를 넉넉히 놓는다', h: '은전 -' + price(80) + ' · 마기 -15', off: S.silver < price(80) ? '은전이 모자란다' : null, f: function () { S.silver -= price(80); S.mad = Math.max(0, S.mad - 15); done('봉투를 놓고 향을 피웠다. 향이 다 탈 때까지 서 있었다. 다리가 저렸다.', 'people'); } },
+    { t: '관 앞에서 칼을 한 번 뽑았다 넣는다', h: '무인의 예 · 내공 +' + qiPct(.015), f: function () { var q = qiPct(.015); S.qi += q; done('칼집에서 한 치를 뽑았다가 넣었다. 무인끼리의 작별이다. 상주들은 모르는 인사였다. 죽은 이는 알았을 것이다.', 'event'); } }], 'night');
+} });
+LIFE.push({ id: 'd_l_ill', from: 67, w: 3, cd: 24, cond: function () { return S.realm < 8; }, run: function () {
+  var c = price(100 + S.realm * 30);
+  scene('노환', ps(pick(['밤새 기침이 멎지 않았다.', '무릎이 붓더니 사흘째 가라앉지 않는다.', '아침에 손이 떨려 찻잔을 떨어뜨렸다.', '눈앞이 뿌옇게 흐려 칼끝이 둘로 보였다.']), '경지가 몸을 붙들어 주지만, 세월은 경지보다 끈질기다.'), [
+    { t: '좋은 약을 지어 먹는다', h: '은전 -' + c + ' · 체력 회복', off: S.silver < c ? '은전이 모자란다' : null, f: function () { S.silver -= c; S.hp = maxHp(); done('비싼 약이 쓴맛만큼은 값을 했다. 사흘 만에 일어났다.', 'rest'); } },
+    { t: '약초를 직접 달인다', h: '약초 -3 · 체력 회복', off: mat('herb') < 3 ? '약초가 모자란다' : null, f: function () { S.mat.herb -= 3; S.hp = maxHp(); done('직접 달인 약은 맛이 없었다. 그래도 효험은 있었다.', 'rest'); } },
+    { t: '운기로 버틴다', h: '체력 -20% · 마기 -5', f: function () { hurt(.2); S.mad = Math.max(0, S.mad - 5); done('기를 돌려 아픈 곳을 눌렀다. 아픔은 가라앉지 않고 자리를 옮겨 다녔다.', 'fail'); } }]);
+} });
+LIFE.push({ id: 'd_l_train', from: 67, w: 3, cd: 24, run: function () {
+  var q = qiPct(.05);
+  scene('마지막 수련', ps('새벽에 깼다. 늙으면 잠이 준다. 남는 새벽을 어디에 쓸지는 오래전에 정했다.', REALMS[S.realm].n + '의 몸이다. 더 오를 데가 있는지, 이제는 잘 모르겠다. 그래도 연무장으로 나갔다.'), [
+    { t: '해가 뜰 때까지 운기한다', h: '내공 +' + q + ' · 체력 -10%', f: function () { S.qi += q; hurt(.1); done('해가 떴을 때 무릎이 펴지지 않았다. 그래도 단전이 뜨거웠다. 내공 +' + q + '.', 'qi'); } },
+    { t: '가볍게 몸만 푼다', h: '마기 -10', f: function () { S.mad = Math.max(0, S.mad - 10); done('천천히 몸을 풀었다. 욕심을 버리는 것도 수련이다. 그걸 아는 데 육십 년이 걸렸다.', 'rest'); } }]);
+} });
+LIFE.push({ id: 'd_l_road', from: 70, w: 2, once: 'life', run: function () {
+  scene('옛 길', ps(W('혈월봉 뒷산 길을 걸었다. 열여섯에 약초를 캐던 길이다.', '마교에서 무림맹으로 넘어오던 그 산길을 다시 걸었다. 흰 옷을 처음 받던 마을 어귀가 그대로였다.', '처음 떠돌기 시작한 그 길을 다시 걸었다. 첫 밤을 보낸 다리 밑이 그대로였다.'),
+    '길은 그대로인데 걸음이 달랐다. 예전에는 한나절이면 넘던 고개를 이틀에 걸쳐 넘었다.', '고개 꼭대기에서 아래를 내려다보았다. 아무것도 아닌 풍경이었다. 그래서 오래 보았다.'), [
+    { t: '고개 마루에 돌 하나를 올린다', h: '수명 +1년 · 마기 -20', f: function () { var g = dLife(1); S.mad = Math.max(0, S.mad - 20); done('돌무더기에 돌 하나를 얹었다. 다음에 누군가 또 얹을 것이다. ' + (g ? '몸이 조금 가벼워졌다. 수명 +' + g + '년.' : '몸은 그대로였지만 마음이 가벼웠다.'), 'rest'); } },
+    { t: '길가의 약초를 캔다', h: '약초 +4 · 옥정', f: function () { addMat('herb', 4); addMat('jade', 1); done('그 시절 캐던 자리에 약초가 또 자라 있었다. 약초 4, 옥정 1.', 'item'); } }], 'loc_hill');
+} });
+LIFE.push({ id: 'd_l_grand', from: 68, w: 3, cd: 36, cond: function () { return (S.disc || []).some(function (d) { return d.p >= 60; }); }, run: function () {
+  var d = dDisc()[0];
+  scene('손제자', ps(esc(d.n) + '이(가) 어린아이 하나를 데려왔다. “제 제자입니다. 스승님께 인사드리러 왔습니다.”', '아이가 꾸벅 절했다. 당신 제자의 제자. 손제자다. 아이의 칼 잡는 손이 ' + esc(d.n) + '과(와) 똑같이 틀려 있었다. 당신이 오래전에 가르친 그 버릇이다.'), [
+    { t: '버릇을 고쳐 준다', h: '제자 수련 +10 · 내공 +' + qiPct(.02), f: function () { var q = qiPct(.02); d.p = Math.min(100, d.p + 10); S.qi += q; done('아이의 손을 고쳐 잡아 주자 ' + esc(d.n) + '이(가) 얼굴을 붉혔다. 자기도 그렇게 잡고 있었으니까. 내공 +' + q + '.', 'people'); } },
+    { t: '그대로 두고 웃는다', h: '마기 -20', f: function () { S.mad = Math.max(0, S.mad - 20); done('틀린 버릇도 삼대를 가면 문파의 초식이 된다. 당신은 웃기만 했다.', 'rest'); } }]);
+} });
+LIFE.push({ id: 'd_l_young', from: 67, to: 92, w: 3, cd: 30, cond: function () { return S.realm >= 3; }, run: function () {
+  scene('젊은 도전자', ps('스무 살 남짓한 무인이 길을 막았다. “노선배의 이름을 듣고 왔습니다. 한 수 가르쳐 주십시오.”', '젊다. 젊은 것이 무섭다. 젊은 것은 지는 법을 모른다.'), [
+    { t: '받아 준다', h: '전투 · 져도 죽지는 않는다 · 은전', f: function () { fight('swordsman', et() * .9, { auto: true, spar: true, title: '젊은 도전자', win: function () { var g = price(60 + S.realm * 20); S.silver += g; done('칼끝으로 그의 갓끈만 잘랐다. 젊은이는 넋이 나가 있다가 큰절을 하고 은전 <b>' + g + '</b>냥을 놓고 갔다.', 'fight'); }, lose: function () { S.hp = Math.max(1, Math.round(maxHp() * .4)); done('젊은 칼이 늙은 칼을 넘었다. 당신은 웃으며 일어났다. “잘했다. 이제 가서 더 센 놈을 찾아라.”', 'fail'); } }); } },
+    { t: '말로 가르친다', h: '마기 -10', f: function () { S.mad = Math.max(0, S.mad - 10); done('“지는 법부터 배워라.” 젊은이는 알아듣지 못한 얼굴로 돌아갔다. 십 년 뒤에 알아들을 것이다.', 'event'); } }]);
+} });
+LIFE.push({ id: 'd_l_letter', from: 67, w: 2, once: 'life', run: function () {
+  scene('오래된 편지', ps('짐을 정리하다 낡은 편지 뭉치를 찾았다. ' + W('혈월봉 시절에 받은 것들이다.', '맹에 처음 들어왔을 때 받은 것들이다.', '떠돌던 시절 객잔마다 남겨진 것들이다.'), '보낸 사람 대부분이 이미 세상에 없다. 맨 아래 편지는 아직 뜯지도 않았다.'), [
+    { t: '뜯어 읽는다', h: '기억이 되살아난다 · 내공 +' + qiPct(.03), f: function () { var q = qiPct(.03); S.qi += q; done('「살아 있으면 답장해라.」 단 한 줄. 이제는 답장할 곳이 없다. 대신 그 한 줄을 오래 읽었다. 내공 +' + q + '.', 'people'); } },
+    { t: '뜯지 않고 태운다', h: '마기 -20', f: function () { S.mad = Math.max(0, S.mad - 20); done('뜯지 않은 편지는 영원히 좋은 소식일 수 있다. 불 속에서 글자 하나 보지 않고 재가 되었다.', 'rest'); } }]);
+} });
+LIFE.push({ id: 'd_l_tea', from: 67, w: 2, cd: 18, run: function () {
+  scene('차 한 잔', '<p>' + pick(['비가 왔다. 처마 밑에서 차를 끓였다.', '눈이 왔다. 화로에 주전자를 올렸다.', '바람이 좋았다. 마루에 찻상을 내놓았다.']) + ' ' + ((S.disc || []).length ? dTopDisc() + '이(가) 맞은편에 앉았다.' : '맞은편 자리는 비어 있었다. 찻잔은 둘을 놓았다.') + '</p>', [
+    { t: '천천히 마신다', h: '체력 · 마기 회복', f: function () { S.hp = Math.min(maxHp(), S.hp + Math.round(maxHp() * .3)); S.mad = Math.max(0, S.mad - 12); done('차가 식을 때까지 아무 말도 하지 않았다. 식은 차도 맛이 있었다.', 'rest'); } },
+    { t: '찻잎을 보며 운기한다', h: '내공 +' + qiPct(.015), f: function () { var q = qiPct(.015); S.qi += q; done('찻잎이 가라앉는 속도에 숨을 맞췄다. 내공 +' + q + '.', 'qi'); } }]);
+} });
+LIFE.push({ id: 'd_l_moon', from: 67, to: 92, w: 2, cd: 36, cond: dPre, run: function () {
+  var q = qiPct(.04);
+  scene('혈월을 올려다보다', ps('그해에도 혈월이 떴다. ' + (dTruth() ? '이제 당신은 저 달이 무엇인지 안다. 녹아 가는 자물쇠다.' : '왜 뜨는지 모르는 달이다. 이 나이까지 모르는 것이 많다.'), '달빛이 해마다 조금씩 짙어진다. 젊은 사람들은 모른다. 늙은이들만 안다.'), [
+    { t: '달빛 아래에서 운기한다', h: '내공 +' + q + ' · 마기 +12', f: function () { S.qi += q; dMad(12); done('붉은 달빛을 들이마셨다. 단전이 끓었다. 이것이 마지막에 무엇을 부를지 알면서도. 내공 +' + q + '.', 'qi'); } },
+    { t: '창을 닫는다', h: '마기 -10', f: function () { S.mad = Math.max(0, S.mad - 10); done('창을 닫았다. 붉은빛이 문틈으로 가늘게 새어 들었다.', 'rest'); } }], 'night');
+} });
+LIFE.push({ id: 'd_l_will', from: 75, w: 2, once: 'life', cond: function () { return !!S.sect || (S.disc || []).length > 0; }, run: function () {
+  scene('유언장', ps('붓을 들었다. ' + (S.sect ? dSect() + '을(를) 누구에게 맡길지,' : '제자들에게 무엇을 남길지,') + ' 은전은 어떻게 나눌지.', '첫 줄을 쓰는 데 하루가 걸렸다. 다음 줄은 금방이었다. 마지막 줄을 쓰는 데 다시 하루가 걸렸다.'), [
+    { t: '재산을 문도와 제자에게 나눈다', h: '은전 -' + price(300) + ' · 제자 수련 상승', off: S.silver < price(300) ? '은전이 모자란다' : null, f: function () { S.silver -= price(300); (S.disc || []).forEach(function (d) { d.p = Math.min(100, d.p + 8); }); S.flags.d_willDone = 1; done('살아 있을 때 나누기로 했다. 죽은 뒤에 나누면 다툼이 생긴다. 살아서 나누면 고맙다는 말을 듣는다.', 'people'); } },
+    { t: '한 줄만 남긴다', h: '마기 -20', f: function () { S.mad = Math.max(0, S.mad - 20); S.flags.d_willDone = 1; done('「사이좋게.」 그것만 적었다. 나머지는 알아서 할 것이다. 그렇게 가르쳤으니까.', 'event'); } }]);
+} });
+LIFE.push({ id: 'd_l_orphan', from: 75, to: 82, w: 3, once: 'life', run: function () {
+  scene('역병의 아이', ps('역병이 휩쓴 마을 어귀에서 아이 하나가 울지도 않고 앉아 있었다. 부모를 묻은 지 사흘째라 했다.', '아이의 눈이 당신을 보았다. 오래전 이름 없던 시종의 눈이었다.'), [
+    { t: '거두어 제자로 삼는다', h: '제자를 얻는다', off: (S.disc || []).length >= 8 ? '제자가 너무 많다' : null, f: function () { S.disc = S.disc || []; var d = { n: randName(), p: 5, t: rnd(3, 5), a: rnd(8, 11) }; S.disc.push(d); done('아이에게 이름을 지어 주었다. <b>' + esc(d.n) + '</b>. 이름을 받은 아이가 그제야 울었다.', 'people'); } },
+    { t: '마을 사람에게 맡기고 은전을 남긴다', h: '은전 -' + price(120) + ' · 마기 -15', off: S.silver < price(120) ? '은전이 모자란다' : null, f: function () { S.silver -= price(120); S.mad = Math.max(0, S.mad - 15); done('아이를 맡기고 은전을 남겼다. 돌아서는데 아이가 소매를 잡았다. 놓아 주는 데 오래 걸렸다.', 'people'); } }], 'loc_village');
+} });
+LIFE.push({ id: 'd_l_spy', from: 83, to: 90, w: 3, cd: 24, cond: dPre, run: function () {
+  scene('하얀 옷의 첩자', ps('밤중에 창틈으로 단 냄새가 스며들었다. 혈정 연기다. 하얀 옷의 그림자가 지붕 위를 지나갔다.', '구천문이 당신을 살피고 있다. 늙은이 하나를 이렇게까지 살피는 것을 보면, 아직 쓸모가 있다는 뜻이다.'), [
+    { t: '쫓아간다', h: '전투 · 져도 죽지는 않는다 · 정보', f: function () { fight('d_acolyte', et() * .95, { auto: true, spar: true, title: '구천문 첩자', win: function () { S.flags.d_intel = 1; addMat('gem', 1); done('첩자의 품에서 사자들의 동선이 적힌 쪽지가 나왔다. 보석 1.', 'fight'); }, lose: function () { S.hp = Math.max(1, Math.round(maxHp() * .35)); done('늙은 다리로는 지붕을 쫓지 못했다. 그림자는 하얀 연기와 함께 사라졌다.', 'fail'); } }); } },
+    { t: '창을 닫고 숯을 피운다', h: '마기 -10', f: function () { S.mad = Math.max(0, S.mad - 10); done('숯 냄새가 단 냄새를 덮었다. 그림자는 다시 오지 않았다. 아직은.', 'rest'); } }], 'night');
+} });
+LIFE.push({ id: 'd_l_hall', from: 67, world: ['ma'], w: 2, cd: 40, run: function () {
+  scene('대전의 초상화', ps('총단 대전에 역대 교주의 초상화가 걸려 있다. 위무강의 초상화 앞에서 걸음이 멈췄다.', S.flags.masterDead ? '그림 속의 그는 병들기 전의 얼굴이었다. 당신이 아는 그는 늘 기침을 하고 있었다.' : '그림 속 얼굴보다 실물이 훨씬 늙었다. 그래도 눈빛만은 그림과 같았다.', '젊은 교도들이 당신을 보고 길을 비켰다. 그들에게는 당신이 초상화 속 사람이다.'), [
+    { t: '초상화 앞에 향을 올린다', h: '마기 -15', f: function () { S.mad = Math.max(0, S.mad - 15); done('향 연기가 초상화를 타고 올라갔다. 그림 속 눈빛이 조금 부드러워진 것 같았다.', 'rest'); } },
+    { t: '젊은 교도들을 불러 모은다', h: '은전 +' + price(80) + ' · 내공 +' + qiPct(.015), f: function () { S.silver += price(80); S.qi += qiPct(.015); done('대전 마당에서 옛 이야기를 했다. 교도들이 눈을 반짝였다. 장로회가 수고비로 은전 <b>' + price(80) + '</b>냥을 보냈다.', 'people'); } }], 'throne');
+} });
+LIFE.push({ id: 'd_l_banquet', from: 67, world: ['jeong'], w: 2, cd: 40, run: function () {
+  scene('맹의 연회', ps('무림맹의 연회에 상석으로 불려 갔다. 마교 출신이 상석에 앉는 것을 두고 수군대던 시절이 있었다. 이제 그 수군대던 자들은 대부분 죽었다.', '젊은 세가의 자제들이 돌아가며 술을 따랐다. 누구의 손자인지 다 알아볼 수 있었다.'), [
+    { t: '한 잔씩 다 받는다', h: '은전 +' + price(100) + ' · 체력 -10%', f: function () { S.silver += price(100); hurt(.1); done('술이 몸을 이기는 나이가 되었다. 그래도 다 받았다. 세가들이 보낸 예물이 은전 <b>' + price(100) + '</b>냥이었다.', 'people'); } },
+    { t: '일찍 자리를 뜬다', h: '마기 -10', f: function () { S.mad = Math.max(0, S.mad - 10); done('달을 핑계로 일찍 나왔다. 연회장의 웃음소리가 뒤에서 멀어졌다. 혼자 걷는 밤길이 좋았다.', 'rest'); } }], 'alliance');
+} });
+LIFE.push({ id: 'd_l_inn', from: 67, world: ['wander'], w: 2, cd: 40, run: function () {
+  scene('객잔의 단골', ps('오래 묵은 객잔의 주인이 바뀌었다. 옛 주인의 딸이다. 그녀는 당신을 보자마자 제일 구석 자리를 비웠다. “아버지가 늘 저 자리는 비워 두라 했어요.”', '창가 자리. 칼을 벽에 기대 놓기 좋은 자리다.'), [
+    { t: '그 자리에 앉아 국수를 시킨다', h: '체력 회복 · 마기 -10', f: function () { S.hp = maxHp(); S.mad = Math.max(0, S.mad - 10); done('국수 맛은 그대로였다. 주인의 딸이 그 아버지의 비법이라 했다. 비법이라기에는 짰다. 그래서 그대로였다.', 'rest'); } },
+    { t: '객잔 지붕을 고쳐 준다', h: '은전 +' + price(60) + ' · 정철 +2', f: function () { S.silver += price(60); addMat('iron', 2); done('늙은 몸으로 지붕에 올랐다. 다 고치고 내려오니 숙박비가 일 년 치 면제되어 있었다. 은전 <b>' + price(60) + '</b>냥어치. 남은 정철 2개도 챙겼다.', 'item'); } }], 'loc_village');
+} });
+LIFE.push({ id: 'd_l_after_white', from: 67, w: 5, once: 'life', cond: dAfterOk, run: function () {
+  scene(dWhite() ? '하얀 달' : '옅어지는 달', ps(dWhite() ? '달이 하얗다. 마지막 혈월 이후 처음 맞는 보름이다. 사람들이 밖으로 나와 달을 보았다. 무서워하지 않고.' : '보름달이 떴다. 붉은빛이 지난해보다 한 겹 옅었다. 문 앞을 지키는 사람들의 장부에 그렇게 적혔다.', '당신은 마루에 누워 달을 보았다. 이제는 저 달이 내일 당신을 어디로도 되돌려 보내지 않는다.'), [
+    { t: '달빛 아래 잠든다', h: '체력 · 마기 회복', f: function () { S.hp = maxHp(); S.mad = 0; done('마루에서 잠들었다. 깨어 보니 누군가 이불을 덮어 주었다. 아침이었다. 같은 날의 아침이 아니라, 다음 날의 아침이었다.', 'rest'); } },
+    { t: '달을 보며 운기한다', h: '내공 +' + qiPct(.03), f: function () { var q = qiPct(.03); S.qi += q; done('달빛이 단전으로 내려왔다. 맑았다. 내공 +' + q + '.', 'qi'); } }], dWhite() ? 'true' : 'peace');
+} });
+LIFE.push({ id: 'd_l_after_kids', from: 67, w: 4, once: 'life', cond: dAfterOk, run: function () {
+  scene('아이들의 놀이', ps('골목에서 아이들이 칼싸움 놀이를 했다. 한 아이가 외쳤다. “내가 문을 닫는 사람 할래!” 다른 아이가 외쳤다. “그럼 나는 일좌!”', '문을 닫는 사람 역할의 아이는 이름이 없었다. 놀이에서도 그 사람은 이름 없이 불렸다. 그게 당신이 바란 것이었다.'), [
+    { t: '나뭇가지로 한 수 가르쳐 준다', h: '마기 -15 · 내공 +' + qiPct(.015), f: function () { S.mad = Math.max(0, S.mad - 15); S.qi += qiPct(.015); done('“문 닫는 사람은 이렇게 서는 거다.” 아이가 따라 섰다. 꽤 그럴듯했다.', 'people'); } },
+    { t: '조용히 지나간다', h: '아무 일 없다', f: function () { done('아이들 웃음소리를 등에 지고 걸었다. 그 소리가 이 세상이 아직 여기 있다는 증거였다.', 'event'); } }], 'peace');
+} });
