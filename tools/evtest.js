@@ -28,6 +28,7 @@ var code = '(' + function (PREFIX, REP) {
       S.trust = S.trust || {}; Object.keys(NPC).forEach(function (k) { if (SIM.rng() < .5) S.trust[k] = Math.floor(SIM.rng() * 6); });
       Object.keys(MATS).forEach(function (k) { if (SIM.rng() < .5) addMat(k, Math.floor(SIM.rng() * 6)); });
       if (SIM.rng() < .5) S.disc = [{ n: '김제자', p: 50, t: 3, a: 14 }]; if (SIM.rng() < .4) S.sect = { n: '시험문', lv: 2 };
+      if (it.kind === 'LIFE' && e.cond && !e.cond()) continue;
       SIM.ended = null; SIM.stuck = null; SIM.hubReady = false; SIM.bad.length = 0; S.inEvent = true;
       try { e.run(); } catch (err) { out.errors.push(it.kind + ' ' + e.id + ' [' + pth + ' r' + S.realm + ' m' + S.month + ']: ' + err.message + ' @ ' + String(err.stack).split('\n')[1]); continue; }
       out.ran++;
