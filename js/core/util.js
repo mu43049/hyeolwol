@@ -1,5 +1,5 @@
 /* 혈월회귀록 v3 — 공통 유틸 */
-var VERSION = 'v3.0';
+var VERSION = 'v4.0';
 var rnd = function (a, b) { return Math.floor(Math.random() * (b - a + 1)) + a; };
 var frand = function (a, b) { return a + Math.random() * (b - a); };
 var pick = function (a) { return a[Math.floor(Math.random() * a.length)]; };

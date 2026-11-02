@@ -1,0 +1,8 @@
+/* v4: 생활 패널, 수명 막대 */
+.hub{grid-template-areas:"hero" "st" "wall" "acts" "life" "log" "ppl" "more"!important}
+@media (min-width:960px){.hub{grid-template-columns:minmax(0,1fr)!important;grid-template-areas:"hero" "st" "wall" "acts" "life" "log" "ppl" "more"!important}}
+.lifebar{position:relative;height:10px;background:#1f171a;border:1px solid #2e2420}
+.lifebar .lb-f{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,#5e5148,var(--gold2));box-shadow:0 0 8px rgba(242,212,142,.5)}
+.lifebar i{position:absolute;top:-2px;bottom:-2px;width:1px;background:#6b5a50}
+.lifebar i.lb-d{width:3px;background:var(--red2);box-shadow:0 0 8px rgba(224,65,74,.9)}
+.pp.stk,.li.stk{background-color:#1a1214}

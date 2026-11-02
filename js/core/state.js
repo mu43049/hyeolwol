@@ -1,9 +1,9 @@
 /* 혈월회귀록 v3 — 저장과 상태. 저장 형식이 바뀌면 SAVE_VER를 올리고 migrate()에 변환을 추가한다. */
-var KEY = 'hyeolwol-v3';
-var SAVE_VER = 3;
+var KEY = 'hyeolwol-v4';
+var SAVE_VER = 4;
 function defP() {
   return { ver: SAVE_VER, lives: 0, shards: 0, best: 0, mem: {}, endings: {}, codex: {}, up: {}, carry: {}, master: {}, dok: null,
-    maxRealm: 0, ach: {}, encs: {}, exploreN: 0, hard: false, trueDone: 0,
+    maxRealm: 0, ach: {}, encs: {}, exploreN: 0, hard: false, trueDone: 0, noReturn: false, cp: null, bestAge: 0, vault: {},
     settings: { bgm: .55, sfx: .8, mute: false, fx: true },
     stats: { deaths: 0, fights: 0, wins: 0, breaks: 0, actions: 0 } };
 }

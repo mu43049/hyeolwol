@@ -131,7 +131,7 @@ function trainMenu() {
   });
 }
 function missionMenu() {
-  var t = Math.min(S.realm, 6), k = 1 + t * .5;
+  var t = Math.min(S.realm, 8), k = 1 + t * .5;
   var L = [(S.route === 'jeong' ? { n: '마교 잔당 소탕', d: '산 아래로 흩어진 마교 잔당을 쫓는다.', e: 'junior', r: [22, 38] } : { n: '외곽 순찰', d: '산문 주변에 정파 척후가 어른거린다.', e: 'scout', r: [20, 36] }),
     { n: '약초 채집', d: '절벽 아래 약초밭. 늑대 울음이 들린다.', e: 'wolf', r: [16, 30] }, { n: '상단 호위', d: '변방 상단을 지나 산적 두목을 친다.', e: 'bandit', r: [34, 60] }];
   show(function () {

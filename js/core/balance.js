@@ -4,14 +4,14 @@ var REALMS = [
   { n: '이류', g: '二', h: '二流', q: 80 },
   { n: '일류', g: '一', h: '一流', q: 220 },
   { n: '절정', g: '絶', h: '絶頂', q: 420 },
-  { n: '초절정', g: '超', h: '超絶頂', q: 700 },
-  { n: '화경', g: '化', h: '化境', q: 1080 },
-  { n: '현경', g: '玄', h: '玄境', q: 1580 },
-  { n: '생사경', g: '生', h: '生死境', q: 2250 },
-  { n: '자연경', g: '然', h: '自然境', q: 3100 }
+  { n: '초절정', g: '超', h: '超絶頂', q: 900 },
+  { n: '화경', g: '化', h: '化境', q: 4200 },
+  { n: '현경', g: '玄', h: '玄境', q: 9500 },
+  { n: '생사경', g: '生', h: '生死境', q: 17500 },
+  { n: '자연경', g: '然', h: '自然境', q: 29000 }
 ];
-var WEAP = [{ n: '맨손', a: 0 }, { n: '철도', a: 4 }, { n: '흑철도', a: 9 }, { n: '혈철도', a: 15 }, { n: '천마도', a: 23 }];
-var ARMOR = [{ n: '무명옷', d: 0, h: 0 }, { n: '가죽갑', d: 2, h: 12 }, { n: '흑린갑', d: 5, h: 28 }, { n: '천잠보의', d: 9, h: 50 }];
+var WEAP = [{ n: '맨손', a: 0 }, { n: '철도', a: 4 }, { n: '흑철도', a: 9 }, { n: '혈철도', a: 15 }, { n: '천마도', a: 23 }, { n: '현철검', a: 32 }, { n: '자하신검', a: 43 }, { n: '용린도', a: 56 }, { n: '천외신병', a: 72 }];
+var ARMOR = [{ n: '무명옷', d: 0, h: 0 }, { n: '가죽갑', d: 2, h: 12 }, { n: '흑린갑', d: 5, h: 28 }, { n: '천잠보의', d: 9, h: 50 }, { n: '현철갑', d: 14, h: 80 }, { n: '금사연갑', d: 20, h: 115 }, { n: '용린갑', d: 28, h: 160 }, { n: '천의무봉', d: 38, h: 220 }];
 
 /* 회귀 각인 (영구 성장). cost(l)는 l레벨에서 다음 레벨로 갈 때 드는 조각 */
 var UPG = [
@@ -31,18 +31,18 @@ function upL(k) { return (P.up && P.up[k]) || 0; }
 var BAL = { enemyHp: 1.35, enemyAtk: 1.12, enemyDefK: .32, defK: .6, eDefK: .5, critK: 1.6 };
 
 function effEye() { return S.eye + (S.realm >= 2 ? 1 : 0); }
-function maxHp() { return Math.round((80 + 32 * S.realm + S.hpBonus + upL('hp') * 12 + sk('cheolgol') * 5 + ARMOR[S.armor || 0].h) * (S.realm >= 4 ? 1.2 : 1)); }
+function maxHp() { return Math.round((80 + 32 * S.realm + S.hpBonus + upL('hp') * 12 + sk('cheolgol') * 5 + ARMOR[S.armor || 0].h + accSum('h')) * (S.realm >= 4 ? 1.2 : 1) * ageMul()); }
 function maxKi() { return 30 + S.realm * 10 + sk('gong') * 2 + (S.realm >= 6 ? 30 : 0); }
 function pAtk() {
-  var a = 10 + 7 * S.realm + WEAP[S.weapon].a + upL('atk') * 2;
+  var a = (10 + 7 * S.realm + WEAP[S.weapon].a + upL('atk') * 2 + accSum('a')) * ageMul();
   if (S.mad >= 85) a *= 1.35; else if (S.mad >= 60) a *= 1.15;
   a *= 1 + .02 * sk('mara') + (S.hp < maxHp() * .4 ? .03 * sk('sihyeol') : 0);
   if (S.realm >= 8) a *= 1.3;
   return a;
 }
-function pDef() { return 2 + 2.5 * S.realm + sk('geumgang') * .8 + ARMOR[S.armor || 0].d + upL('def') * 1.5; }
+function pDef() { return 2 + 2.5 * S.realm + sk('geumgang') * .8 + ARMOR[S.armor || 0].d + upL('def') * 1.5 + accSum('d'); }
 function critRate() { return Math.min(.35, .06 + .015 * effEye()); }
-function qiGain(n) { return Math.round(n * (1 + .08 * upL('gain'))); }
+function qiGain(n) { return Math.round(n * (1 + .08 * upL('gain') + accSum('q') / 100)); }
 function canBreak() { return S.realm < REALMS.length - 1 && S.qi >= REALMS[S.realm + 1].q; }
 function nextQ() { return REALMS[S.realm + 1] ? REALMS[S.realm + 1].q : S.qi; }
 function madMul() { return S.realm >= 8 ? 0 : (S.realm >= 4 ? .7 : 1); }
